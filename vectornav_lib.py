@@ -43,6 +43,14 @@ class VNUSB_lib:
     
     def poll_data(self) -> VectornavData:
         data = VectornavData()
+        # from: https://blog.benhall.tech/vn_driver_lib/cpp/help/ez_async_data_2main_8cpp-example.html
+        # // Often, we would like to get and process each packet received from the sensor.
+        # // This is not realistic with ez->currentData() since it is non-blocking and we
+        # // would also have to compare each CompositeData struture for changes in the data.
+        # // However, EzAsyncData also provides the getNextData() method which blocks until
+        # // a new data packet is available. The for loop below shows how to output each
+        # // data packet received from the sensor using getNextData().
+        # self.vn_sensor_ez.getNextData()
         data.body_vel = self.vn_sensor_ez.current_data.velocity_estimated_body
         data.linear_accel_uncomp = self.vn_sensor_ez.current_data.acceleration_uncompensated
         data.linear_accel_ins_body = self.vn_sensor_ez.current_data.acceleration_linear_body
