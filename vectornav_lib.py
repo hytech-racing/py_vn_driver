@@ -16,6 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 # x forward, z down, y right
 VectorXYZ = Tuple[float, float, float]
+VectorLatLon = Tuple[float, float]
 VectorLatLonAlt = VectorXYZ
 
 class GpsFixType(Enum):
@@ -29,14 +30,14 @@ class VectornavData:
     linear_accel_ins_body: VectorXYZ
     linear_accel_uncomp: VectorXYZ
     body_vel: VectorXYZ
-    gps_lat_lon_altitude: VectorLatLonAlt
+    gps_lat_lon: VectorLatLon
     gps_fix: GpsFixType
     def __init__(self):
         self.yaw_pitch_roll = [0.0, 0.0, 0.0]
         self.linear_accel_uncomp = [0.0, 0.0, 0.0]
         self.linear_accel_ins_body = [0.0, 0.0, 0.0]
         self.body_vel = [0.0, 0.0, 0.0]
-        self.gps_lat_lon_alt = [0.0, 0.0, 0.0]
+        self.gps_lat_lon = [0.0, 0.0]
         self.gps_time = 0.0 # The absolute GPS time since start of GPS epoch 1980 expressed in nano seconds. This field is equivalent to the TimeGps field in group 2.
         self.gps_fix = GpsFixType.NO_FIX
 
