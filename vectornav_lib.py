@@ -3,6 +3,9 @@ import sys
 from typing import Tuple
 from enum import Enum
 
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
 
 # yaw pitch roll angles
 # linear accel data
@@ -50,12 +53,21 @@ class VNUSB_lib:
         # // However, EzAsyncData also provides the getNextData() method which blocks until
         # // a new data packet is available. The for loop below shows how to output each
         # // data packet received from the sensor using getNextData().
-        # self.vn_sensor_ez.getNextData()
-        data.body_vel = self.vn_sensor_ez.current_data.velocity_estimated_body
-        data.linear_accel_uncomp = self.vn_sensor_ez.current_data.acceleration_uncompensated
-        data.linear_accel_ins_body = self.vn_sensor_ez.current_data.acceleration_linear_body
-        data.yaw_pitch_roll = self.vn_sensor_ez.current_data.yaw_pitch_roll
-        data.gps_lat_lon_alt = self.vn_sensor_ez.current_data.position_gps_lla
-        data.gps_time = self.vn_sensor_ez.current_data.time_gps
-        data.gps_fix = self.vn_sensor_ez.current_data.fix
+         
+        data_recvd = self.vn_sensor_ez.next_data()
+
+        data.body_vel = data_recvd.velocity_estimated_body
+        data.linear_accel_uncomp = data_recvd.acceleration_uncompensated
+        data.linear_accel_ins_body = data_recvd.acceleration_linear_body
+        data.yaw_pitch_roll = data_recvd.yaw_pitch_roll
+        data.gps_lat_lon_alt = data_recvd.position_gps_lla
+        data.gps_time = data_recvd.time_gps
+        data.gps_fix = data_recvd.fix
         return data
+
+    async def poll_data_async(self):
+        loop = asyncio.get_running_loop()
+        # Use ThreadPoolExecutor() by default, or specify your own executor
+        # For CPU-bound tasks, consider using ProcessPoolExecutor() instead
+        result = await loop.run_in_executor(None, self.poll_data)
+        return result
